@@ -22,7 +22,7 @@ class OpenAI:
     def memories_str(self):
         # retorna uma string com as memórias numeradas e separadas por quebra de linha
         # O índice da memória começa em 1
-        return "".join([f"[{i+1}] {m}\n" for i, m in enumerate(self.memories)])
+        return "\n".join([f"[{i+1}] {m}" for i, m in enumerate(self.memories)])
 
     def call_openai(self, prompt):
         # Cria um modelo de completação usando o GPT-3 da OpenAI
@@ -48,7 +48,7 @@ class OpenAI:
         if user is not None:
             user_attr = f' user_name="{user}"'
 
-        prompt = f'{event_prefix}type="{event_type}"{user_attr}">{prompt}{event_suffix}\n{event_prefix}type="{SPEECH}" user_name="{self.name}">'
+        prompt = f'{event_prefix}type="{event_type}"{user_attr}>{prompt}{event_suffix}\n{event_prefix}type="{SPEECH}" user_name="{self.name}">'
         
         self.history += prompt
 
