@@ -45,34 +45,36 @@ async def context(ctx, *, arg=None):
     await ctx.send(openai_client.contextualize(arg))
 
 @bot.command()
-async def memorize(ctx, *, arg=None):
+async def instruct(ctx, *, arg=None):
     if arg is None:
-        await ctx.send("Você precisa me dizer o que você quer que eu memorize!")
+        await ctx.send("Você precisa me dizer o que eu devo lembrar como instrução base!")
         return
-    openai_client.add_to_memory(arg)
-    await ctx.send('Ok, vou me lembrar disso!\n Aqui estão as minhas memórias mais importantes: \n' + openai_client.memories_str())
+    openai_client.add_instruction(arg)
+    await ctx.send('Ok, vou me lembrar disso!\n Aqui estão as minhas instruções bases: \n' + openai_client.instructions_str())
 
 @bot.command()
-async def memories(ctx):
-    await ctx.send("Aqui estão as minhas memórias mais importantes:\n" + openai_client.memories_str())
+async def instructions(ctx):
+    if len(openai_client.instructions) == 0:
+        await ctx.send("Não tenho nenhuma instrução base ainda!")
+    await ctx.send("Aqui estão as minhas instruções bases:\n" + openai_client.instructions_str())
 
 @bot.command()
 async def forget(ctx, arg=None):
     if arg is None:
-        await ctx.send("Você precisa me dizer qual o númeor da memória você quer que eu esqueça!")
+        await ctx.send("Você precisa me dizer qual o número da instrução você quer que eu esqueça!")
         return
     
-    openai_client.remove_memory(int(arg))
-    await ctx.send('Ok, esqueci isso!\n Aqui as memórias que me restaram: \n' + openai_client.memories_str())
+    openai_client.remove_instruction(int(arg))
+    await ctx.send('Ok, esqueci isso!\n Aqui as instruções que me restaram: \n' + openai_client.instructions_str())
 
 @bot.command()
 async def clear(ctx, arg=None):
     if arg == 'history':
         openai_client.clear_history()
         await ctx.send('Sobre o que a gente tava conversando mesmo?\n Acho que esqueci...')
-    elif arg == 'memory':
-        openai_client.clear_memory()
-        await ctx.send('Ãn!?\n Onde estamos?\nQuem sou eu mesmo?\n Hmm... Tudo bem, ainda lembro do que conversamos!')
+    elif arg == 'instructions':
+        openai_client.clear_instruction()
+        await ctx.send('Ãn!?\nOnde estamos?\nQuem sou eu mesmo?\nHmm... Tudo bem, ainda lembro do que conversamos!')
     else:
         await ctx.send('Não entendi o que você queria limpar...')
 
