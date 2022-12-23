@@ -42,15 +42,8 @@ class OpenAI:
 
         return completed_text
 
-    def new_event(self, event_type, prompt, user=None):
-
-        user_attr = ""
-        if user is not None:
-            user_attr = f' user_name="{user}"'
-
-        prompt = f'{event_prefix}type="{event_type}"{user_attr}>{prompt}{event_suffix}\n{event_prefix}type="{SPEECH}" user_name="{self.name}">'
-        
-        self.history += prompt
+    def get_response(self):
+        self.history += f'{event_prefix}type="{SPEECH}" user_name="{self.name}">'
 
         # Chama a OpenAI para completar o texto
         completed_text = self.call_openai(self.rules_str() + "\n\n" + self.history)
@@ -62,15 +55,33 @@ class OpenAI:
 
         return completed_text
 
+    def new_event(self, event_type, prompt, user=None, complete=True):
 
-    def act_as_user(self, user, prompt):
-        return self.new_event(ACTION, prompt, user)
+        user_attr = ""
+        if user is not None:
+            user_attr = f' user_name="{user}"'
+
+        prompt = f'{event_prefix}type="{event_type}"{user_attr}>{prompt}{event_suffix}\n'
+        self.history += prompt
+        
+        if not complete:
+            # Printa as regras e o histórico	
+            print(f"{self.rules_str()}\n\n{self.history}")
+            return ''
+
+        return self.get_response()
+
+    def act_as_user(self, user, prompt, complete=True):
+        return self.new_event(ACTION, prompt, user, complete)
     
-    def say_as_user(self, user, prompt):
-        return self.new_event(SPEECH, prompt, user)
+    def say_as_user(self, user, prompt, complete=True):
+        return self.new_event(SPEECH, prompt, user, complete)
 
-    def env_happen(self, prompt):
-        return self.new_event(ENV_EVENT, prompt)
+    def env_happen(self, prompt, complete=True):
+        return self.new_event(ENV_EVENT, prompt, complete=complete)
+
+    def poke(self):
+        return self.get_response()
 
     def add_rule(self, prompt):
         rules = prompt.split("\n")

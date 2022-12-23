@@ -54,6 +54,39 @@ async def env(ctx, *, arg=None):
     await ctx.send(openai_client.env_happen(arg))
 
 @bot.command()
+async def just(ctx, *, arg=None):
+    # Check if arg is empty
+    if arg is None:
+        return
+    
+    # Check if arg start with "say"
+    if arg.startswith("say"):
+        # Remove the first word
+        arg = arg.split(" ", 1)[1]
+        openai_client.say_as_user(ctx.author.name, arg, complete=False)
+    
+    # Check if arg start with "act"
+    elif arg.startswith("act") or arg.startswith("do"):
+        # Remove the first word
+        arg = arg.split(" ", 1)[1]
+        openai_client.act_as_user(ctx.author.name, arg, complete=False)
+
+    # Check if arg start with "env"
+    elif arg.startswith("env"):
+        # Remove the first word
+        arg = arg.split(" ", 1)[1]
+        openai_client.env_happen(arg, complete=False)
+    
+    # If arg is not valid
+    else:
+        await ctx.send("...?")
+
+@bot.command()
+async def poke(ctx, arg=None):
+    await ctx.send(openai_client.poke())
+
+
+@bot.command()
 async def rule(ctx, *, arg=None):
     """
     The firs word can be "new", "list" or "del"
