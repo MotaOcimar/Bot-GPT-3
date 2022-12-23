@@ -15,14 +15,14 @@ class OpenAI:
         openai.api_key = open("keys/openai.txt").read()
 
         self.history = ""
-        self.instructions = []
+        self.rules = []
         self.name = name
         self.chat_name = chat_name
 
-    def instructions_str(self):
-        # retorna uma string com as instruções numeradas e separadas por quebra de linha
-        # O índice da instrução começa em 1
-        return "\n".join([f"[{i+1}] {m}" for i, m in enumerate(self.instructions)])
+    def rules_str(self):
+        # retorna uma string com as regras numeradas e separadas por quebra de linha
+        # O índice da regra começa em 1
+        return "\n".join([f"[{i+1}] {m}" for i, m in enumerate(self.rules)])
 
     def call_openai(self, prompt):
         # Cria um modelo de completação usando o GPT-3 da OpenAI
@@ -53,12 +53,12 @@ class OpenAI:
         self.history += prompt
 
         # Chama a OpenAI para completar o texto
-        completed_text = self.call_openai(self.instructions_str() + "\n\n" + self.history)
+        completed_text = self.call_openai(self.rules_str() + "\n\n" + self.history)
 
         self.history += completed_text + event_suffix + "\n"
 
-        # Printa as instruções e o histórico	
-        print(f"{self.instructions_str()}\n\n{self.history}")
+        # Printa as regras e o histórico	
+        print(f"{self.rules_str()}\n\n{self.history}")
 
         return completed_text
 
@@ -72,16 +72,16 @@ class OpenAI:
     def contextualize(self, prompt):
         return self.new_event(CONTEXT, prompt)
 
-    def add_instruction(self, prompt):
-        instructions = prompt.split("\n")
-        self.instructions += instructions
+    def add_rule(self, prompt):
+        rules = prompt.split("\n")
+        self.rules += rules
 
-    def remove_instruction(self, index):
+    def remove_rule(self, index):
         index -= 1
-        self.instructions.pop(index)
+        self.rules.pop(index)
     
-    def clear_instruction(self):
-        self.instructions = []
+    def clear_rules(self):
+        self.rules = []
     
     def clear_history(self):
         self.history = ""

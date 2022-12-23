@@ -24,7 +24,7 @@ async def on_message(message):
 
 @bot.command()
 async def hello(ctx):
-    await ctx.channel.send("pong")
+    await ctx.channel.send(f"hello {ctx.author.name}!")
 
 @bot.command()
 async def say(ctx, *, arg=None):
@@ -39,41 +39,91 @@ async def act(ctx, *, arg=None):
     await ctx.send(openai_client.act_as_user(ctx.author.name, arg))
 
 @bot.command()
+async def do(ctx, *, arg=None):
+    """
+    act alias
+    """
+    if arg is None:
+        return
+    await ctx.send(openai_client.act_as_user(ctx.author.name, arg))
+
+@bot.command()
 async def context(ctx, *, arg=None):
     if arg is None:
         return
     await ctx.send(openai_client.contextualize(arg))
 
 @bot.command()
-async def instruct(ctx, *, arg=None):
-    if arg is None:
-        await ctx.send("Você precisa me dizer o que eu devo lembrar como instrução base!")
-        return
-    openai_client.add_instruction(arg)
-    await ctx.send('Ok, vou me lembrar disso!\n Aqui estão as minhas instruções bases: \n' + openai_client.instructions_str())
+async def rule(ctx, *, arg=None):
+    """
+    The firs word can be "new", "list" or "del"
+    """
 
-@bot.command()
-async def instructions(ctx):
-    if len(openai_client.instructions) == 0:
-        await ctx.send("Não tenho nenhuma instrução base ainda!")
-    await ctx.send("Aqui estão as minhas instruções bases:\n" + openai_client.instructions_str())
+    # Check if arg start with "new"
+    if arg.startswith("new"):
+        # Remove the first word
+        arg = arg.split(" ", 1)[1]
 
-@bot.command()
-async def forget(ctx, arg=None):
-    if arg is None:
-        await ctx.send("Você precisa me dizer qual o número da instrução você quer que eu esqueça!")
-        return
+        # Check if arg is empty
+        if arg is None:
+            await ctx.send("Você precisa me dizer o que eu devo lembrar como regra!")
+            return
+        
+        # Add the rule
+        openai_client.add_rule(arg)
+        await ctx.send('Ok, vou me lembrar disso!\n Aqui estão as minhas regras bases: \n' + openai_client.rules_str())
+
+    # Check if arg start with "list"
+    elif arg.startswith("list"):
+        if len(openai_client.rules) == 0:
+            await ctx.send("Não tenho nenhuma regra ainda!")
+            return
+        
+        await ctx.send("Aqui estão as minhas regras bases:\n" + openai_client.rules_str())
+
+    # Check if arg start with "del"
+    elif arg.startswith("del"):
+        # Remove the first word
+        arg = arg.split(" ", 1)[1]
+
+        # Check if arg is empty
+        if arg is None or not arg.isnumeric():
+            await ctx.send("Você precisa me dizer qual o número da regra você quer que eu esqueça!")
+            return
+
+        # Check if arg is 'all'
+        elif arg == 'all':
+            openai_client.clear_rules()
+            await ctx.send('Ãn!?\nOnde estamos?\nQuem sou eu mesmo?\nHmm... Tudo bem, ainda lembro do que conversamos!')
+            return
+        
+        # Check if arg is a integer
+        elif not arg.isnumeric():
+            await ctx.send("Você precisa me dizer qual o número da regra você quer que eu esqueça!")
+            return
+
+        # Check if arg is a valid rule number
+        elif int(arg) > len(openai_client.rules) or int(arg) < 1:
+            await ctx.send("O número da regra que você me deu não é válido!")
+            return
+
+        # Remove the rule        
+        openai_client.remove_rule(int(arg))
+        await ctx.send('Ok, esqueci isso!\n Aqui as regras que me restaram: \n' + openai_client.rules_str())
     
-    openai_client.remove_instruction(int(arg))
-    await ctx.send('Ok, esqueci isso!\n Aqui as instruções que me restaram: \n' + openai_client.instructions_str())
+    # If arg is not valid
+    else:
+        await ctx.send("Não entendi o que você queria que eu fizesse com as regras...")
+        return
+        
 
 @bot.command()
 async def clear(ctx, arg=None):
     if arg == 'history':
         openai_client.clear_history()
         await ctx.send('Sobre o que a gente tava conversando mesmo?\n Acho que esqueci...')
-    elif arg == 'instructions':
-        openai_client.clear_instruction()
+    elif arg == 'rules':
+        openai_client.clear_rules()
         await ctx.send('Ãn!?\nOnde estamos?\nQuem sou eu mesmo?\nHmm... Tudo bem, ainda lembro do que conversamos!')
     else:
         await ctx.send('Não entendi o que você queria limpar...')
