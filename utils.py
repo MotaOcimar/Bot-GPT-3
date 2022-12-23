@@ -6,7 +6,7 @@ event_suffix = "</event>"
 # Events types
 SPEECH = "speech"
 ACTION = "action"
-CONTEXT = "context"
+ENV_EVENT = "environment"
 
 class OpenAI:
 
@@ -69,8 +69,8 @@ class OpenAI:
     def say_as_user(self, user, prompt):
         return self.new_event(SPEECH, prompt, user)
 
-    def contextualize(self, prompt):
-        return self.new_event(CONTEXT, prompt)
+    def env_happen(self, prompt):
+        return self.new_event(ENV_EVENT, prompt)
 
     def add_rule(self, prompt):
         rules = prompt.split("\n")

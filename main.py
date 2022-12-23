@@ -48,10 +48,10 @@ async def do(ctx, *, arg=None):
     await ctx.send(openai_client.act_as_user(ctx.author.name, arg))
 
 @bot.command()
-async def context(ctx, *, arg=None):
+async def env(ctx, *, arg=None):
     if arg is None:
         return
-    await ctx.send(openai_client.contextualize(arg))
+    await ctx.send(openai_client.env_happen(arg))
 
 @bot.command()
 async def rule(ctx, *, arg=None):
@@ -115,7 +115,7 @@ async def rule(ctx, *, arg=None):
     else:
         await ctx.send("Não entendi o que você queria que eu fizesse com as regras...")
         return
-        
+
 
 @bot.command()
 async def clear(ctx, arg=None):
