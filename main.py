@@ -5,6 +5,7 @@ from utils import *
 # Cria o bot
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='/', intents=intents)
+is_mutted = False
 
 @bot.event
 async def on_ready():
@@ -18,9 +19,24 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    print(f"Message from {message.author}: {message.content}")
+    if is_mutted or message.content.startswith("/"):
+        await bot.process_commands(message)
+        return
 
-    await bot.process_commands(message)
+    response = openai_client.say_as_user(message.author, message.content)
+    await message.channel.send(response)
+
+@bot.command()
+async def mute(ctx):
+    global is_mutted
+    is_mutted = True
+    await ctx.channel.send("Escutarei apenas comandos agora")
+
+@bot.command()
+async def unmute(ctx):
+    global is_mutted
+    is_mutted = False
+    await ctx.channel.send("Escutarei tudo agora")
 
 @bot.command()
 async def hello(ctx):
