@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
     global openai_client
-    openai_client = OpenAI(bot.user, bot)
+    openai_client = OpenAIBot(bot.user)
 
 
 @bot.event
@@ -27,31 +27,41 @@ async def hello(ctx):
     await ctx.channel.send(f"hello {ctx.author}!")
 
 @bot.command()
-async def say(ctx, *, arg=None):
+async def say(ctx, *, arg=None, complete=True):
     if arg is None:
         return
-    await ctx.send(openai_client.say_as_user(ctx.author, arg))
+
+    response  = openai_client.say_as_user(ctx.author, arg, complete=complete)
+    if complete:
+        await ctx.send(response)
+        return
 
 @bot.command()
-async def act(ctx, *, arg=None):
+async def act(ctx, *, arg=None, complete=True):
     if arg is None:
         return
-    await ctx.send(openai_client.act_as_user(ctx.author, arg))
+
+    response  = openai_client.act_as_user(ctx.author, arg, complete=complete)
+    if complete:
+        await ctx.send(response)
+        return
 
 @bot.command()
-async def do(ctx, *, arg=None):
+async def do(ctx, *, arg=None, complete=True):
     """
     act alias
     """
-    if arg is None:
-        return
-    await ctx.send(openai_client.act_as_user(ctx.author, arg))
+    await act(ctx, arg=arg, complete=complete)
 
 @bot.command()
-async def env(ctx, *, arg=None):
+async def env(ctx, *, arg=None, complete=True):
     if arg is None:
         return
-    await ctx.send(openai_client.env_happen(arg))
+
+    response  = openai_client.env_happen(arg, complete=complete)
+    if complete:
+        await ctx.send(response)
+        return
 
 @bot.command()
 async def just(ctx, *, arg=None):
@@ -63,23 +73,23 @@ async def just(ctx, *, arg=None):
     if arg.startswith("say"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
-        openai_client.say_as_user(ctx.author, arg, complete=False)
+        await say(ctx, arg=arg, complete=False)
     
     # Check if arg start with "act"
     elif arg.startswith("act") or arg.startswith("do"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
-        openai_client.act_as_user(ctx.author, arg, complete=False)
+        await act(ctx, arg=arg, complete=False)
 
     # Check if arg start with "env"
     elif arg.startswith("env"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
-        openai_client.env_happen(arg, complete=False)
+        await env(ctx, arg=arg, complete=False)
     
     # If arg is not valid
     else:
-        await ctx.send("...?")
+        await ctx.send("Não entendi o que você queria que eu fizesse!")
 
 @bot.command()
 async def poke(ctx, arg=None):
@@ -89,7 +99,7 @@ async def poke(ctx, arg=None):
 @bot.command()
 async def rule(ctx, *, arg=None):
     """
-    The firs word can be "new", "list" or "del"
+    The first word can be "new", "list" or "del"
     """
 
     # Check if arg start with "new"

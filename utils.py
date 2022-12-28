@@ -8,21 +8,24 @@ SPEECH = "speech"
 ACTION = "action"
 ENV_EVENT = "environment"
 
-class OpenAI:
+class OpenAIBot:
 
-    def __init__(self, name, chat_name):
+    def __init__(self, botName):
         # Obtem a chave de acesso da OpenAI do arquivo key.json
         openai.api_key = open("keys/openai.txt").read()
 
         self.history = ""
         self.rules = []
-        self.name = name
-        self.chat_name = chat_name
+        self.name = botName
 
     def rules_str(self):
         # retorna uma string com as regras numeradas e separadas por quebra de linha
         # O índice da regra começa em 1
         return "\n".join([f"[{i+1}] {m}" for i, m in enumerate(self.rules)])
+
+    def full_prompt(self):
+        # Retorna o prompt completo para a OpenAI
+        return self.rules_str() + "\n\n" + self.history
 
     def call_openai(self, prompt):
         # Cria um modelo de completação usando o GPT-3 da OpenAI
@@ -46,12 +49,12 @@ class OpenAI:
         self.history += f'{event_prefix}type="{SPEECH}" username="{self.name}">'
 
         # Chama a OpenAI para completar o texto
-        completed_text = self.call_openai(self.rules_str() + "\n\n" + self.history)
+        completed_text = self.call_openai(self.full_prompt())
 
         self.history += completed_text + event_suffix + "\n"
 
         # Printa as regras e o histórico	
-        print(f"{self.rules_str()}\n\n{self.history}")
+        print(f"{self.full_prompt()}")
 
         return completed_text
 
