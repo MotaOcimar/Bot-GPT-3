@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
     global openai_client
-    openai_client = OpenAI(bot.user.name, bot)
+    openai_client = OpenAI(bot.user, bot)
 
 
 @bot.event
@@ -24,19 +24,19 @@ async def on_message(message):
 
 @bot.command()
 async def hello(ctx):
-    await ctx.channel.send(f"hello {ctx.author.name}!")
+    await ctx.channel.send(f"hello {ctx.author}!")
 
 @bot.command()
 async def say(ctx, *, arg=None):
     if arg is None:
         return
-    await ctx.send(openai_client.say_as_user(ctx.author.name, arg))
+    await ctx.send(openai_client.say_as_user(ctx.author, arg))
 
 @bot.command()
 async def act(ctx, *, arg=None):
     if arg is None:
         return
-    await ctx.send(openai_client.act_as_user(ctx.author.name, arg))
+    await ctx.send(openai_client.act_as_user(ctx.author, arg))
 
 @bot.command()
 async def do(ctx, *, arg=None):
@@ -45,7 +45,7 @@ async def do(ctx, *, arg=None):
     """
     if arg is None:
         return
-    await ctx.send(openai_client.act_as_user(ctx.author.name, arg))
+    await ctx.send(openai_client.act_as_user(ctx.author, arg))
 
 @bot.command()
 async def env(ctx, *, arg=None):
@@ -63,13 +63,13 @@ async def just(ctx, *, arg=None):
     if arg.startswith("say"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
-        openai_client.say_as_user(ctx.author.name, arg, complete=False)
+        openai_client.say_as_user(ctx.author, arg, complete=False)
     
     # Check if arg start with "act"
     elif arg.startswith("act") or arg.startswith("do"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
-        openai_client.act_as_user(ctx.author.name, arg, complete=False)
+        openai_client.act_as_user(ctx.author, arg, complete=False)
 
     # Check if arg start with "env"
     elif arg.startswith("env"):
@@ -120,7 +120,7 @@ async def rule(ctx, *, arg=None):
         arg = arg.split(" ", 1)[1]
 
         # Check if arg is empty
-        if arg is None or not arg.isnumeric():
+        if arg is None:
             await ctx.send("Você precisa me dizer qual o número da regra você quer que eu esqueça!")
             return
 

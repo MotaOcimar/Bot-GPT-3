@@ -43,7 +43,7 @@ class OpenAI:
         return completed_text
 
     def get_response(self):
-        self.history += f'{event_prefix}type="{SPEECH}" user_name="{self.name}">'
+        self.history += f'{event_prefix}type="{SPEECH}" username="{self.name}">'
 
         # Chama a OpenAI para completar o texto
         completed_text = self.call_openai(self.rules_str() + "\n\n" + self.history)
@@ -59,7 +59,7 @@ class OpenAI:
 
         user_attr = ""
         if user is not None:
-            user_attr = f' user_name="{user}"'
+            user_attr = f' username="{user}"'
 
         prompt = f'{event_prefix}type="{event_type}"{user_attr}>{prompt}{event_suffix}\n'
         self.history += prompt
