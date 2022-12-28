@@ -85,25 +85,18 @@ async def just(ctx, *, arg=None):
     if arg is None:
         return
     
-    # Check if arg start with "say"
     if arg.startswith("say"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
         await say(ctx, arg=arg, complete=False)
-    
-    # Check if arg start with "act"
     elif arg.startswith("act") or arg.startswith("do"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
         await act(ctx, arg=arg, complete=False)
-
-    # Check if arg start with "env"
     elif arg.startswith("env"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
         await env(ctx, arg=arg, complete=False)
-    
-    # If arg is not valid
     else:
         await ctx.send("Não entendi o que você queria que eu fizesse!")
 
@@ -118,7 +111,6 @@ async def rule(ctx, *, arg=None):
     The first word can be "new", "list" or "del"
     """
 
-    # Check if arg start with "new"
     if arg.startswith("new"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
@@ -130,9 +122,8 @@ async def rule(ctx, *, arg=None):
         
         # Add the rule
         openai_client.add_rule(arg)
-        await ctx.send('Ok, vou me lembrar disso!\n Aqui estão as minhas regras bases: \n' + openai_client.rules_str())
+        await ctx.send('Ok, vou me lembrar disso!\nAqui estão as minhas regras bases: \n' + openai_client.rules_str())
 
-    # Check if arg start with "list"
     elif arg.startswith("list"):
         if len(openai_client.rules) == 0:
             await ctx.send("Não tenho nenhuma regra ainda!")
@@ -140,7 +131,6 @@ async def rule(ctx, *, arg=None):
         
         await ctx.send("Aqui estão as minhas regras bases:\n" + openai_client.rules_str())
 
-    # Check if arg start with "del"
     elif arg.startswith("del"):
         # Remove the first word
         arg = arg.split(" ", 1)[1]
@@ -168,7 +158,7 @@ async def rule(ctx, *, arg=None):
 
         # Remove the rule        
         openai_client.remove_rule(int(arg))
-        await ctx.send('Ok, esqueci isso!\n Aqui as regras que me restaram: \n' + openai_client.rules_str())
+        await ctx.send('Ok, esqueci isso!\nAqui as regras que me restaram: \n' + openai_client.rules_str())
     
     # If arg is not valid
     else:
@@ -180,7 +170,7 @@ async def rule(ctx, *, arg=None):
 async def clear(ctx, arg=None):
     if arg == 'history':
         openai_client.clear_history()
-        await ctx.send('Sobre o que a gente tava conversando mesmo?\n Acho que esqueci...')
+        await ctx.send('Sobre o que a gente tava conversando mesmo?\nAcho que esqueci...')
     elif arg == 'rules':
         openai_client.clear_rules()
         await ctx.send('Ãn!?\nOnde estamos?\nQuem sou eu mesmo?\nHmm... Tudo bem, ainda lembro do que conversamos!')
