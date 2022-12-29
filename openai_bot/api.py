@@ -58,6 +58,9 @@ class OpenAIBot(OpenAIBotCore):
         return self._OpenAIBotCore__poke()
 
     def rule(self, arg=None):
+        if arg is None:
+            return "O que devo fazer com as regras? Use 'rule new', 'rule list' ou 'rule del'"
+
         if arg.startswith("new"):
             # Remove the first word
             arg = arg.split(" ", 1)[1]

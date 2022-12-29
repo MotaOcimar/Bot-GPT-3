@@ -33,7 +33,7 @@ def unmute(update, context):
 
 def say(update, context, complete=True):
     # get the args keeping the formatting
-    arg = update.message.text.split(" ", 1)[1]
+    arg = update.message.text.split(" ", 1)[1] if len(update.message.text.split(" ")) > 1 else None
     
     response = api.say(update.message.from_user.username, arg, complete=complete)
     if complete:
@@ -41,7 +41,7 @@ def say(update, context, complete=True):
 
 def act(update, context, complete=True):
     # get the args keeping the formatting
-    arg = update.message.text.split(" ", 1)[1]
+    arg = update.message.text.split(" ", 1)[1] if len(update.message.text.split(" ")) > 1 else None
 
     response = api.act(update.message.from_user.username, arg, complete=complete)
     if complete:
@@ -55,7 +55,7 @@ def do(update, context, complete=True):
 
 def env(update, context, complete=True):
     # get the args keeping the formatting
-    arg = update.message.text.split(" ", 1)[1]
+    arg = update.message.text.split(" ", 1)[1] if len(update.message.text.split(" ")) > 1 else None
 
     response = api.env(arg, complete=complete)
     if complete:
@@ -63,7 +63,7 @@ def env(update, context, complete=True):
 
 def just(update, context):
     # get the args keeping the formatting
-    arg = update.message.text.split(" ", 1)[1]
+    arg = update.message.text.split(" ", 1)[1] if len(update.message.text.split(" ")) > 1 else None
 
     response = api.just(update.message.from_user.username, arg)
     if response is None or response == "":
@@ -75,12 +75,15 @@ def poke(update, context):
 
 def rule(update, context):
     # get the args keeping the formatting
-    arg = update.message.text.split(" ", 1)[1]
+    arg = update.message.text.split(" ", 1)[1] if len(update.message.text.split(" ")) > 1 else None
 
     update.message.reply_text(api.rule(arg))
 
 def clear(update, context):
-    update.message.reply_text(api.clear())
+    # get the args keeping the formatting
+    arg = update.message.text.split(" ", 1)[1] if len(update.message.text.split(" ")) > 1 else None
+
+    update.message.reply_text(api.clear(arg))
 
 def main():
     # Obtenha o token de acesso do seu bot do BotFather
